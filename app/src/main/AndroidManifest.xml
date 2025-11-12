@@ -12,6 +12,15 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.GroupFinalProject">
         <activity
+            android:name=".CardDetailActivity"
+            android:exported="false" />
+        <activity
+            android:name=".TranslationActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ScannerActivity"
+            android:exported="false" />
+        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
