@@ -55,6 +55,10 @@ dependencies {
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation("com.github.bumptech.glide:glide:4.15.1")
     implementation("com.google.mlkit:translate:17.0.1")
+    implementation("com.google.android.gms:play-services-mlkit-document-scanner:16.0.0")
+    //Used for image loading in Document Scanner preview, isn't *required*
+    //However scanned images can be large this just makes resizing easier and helps with scanned images
+    implementation("com.github.bumptech.glide:glide:5.0.5")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

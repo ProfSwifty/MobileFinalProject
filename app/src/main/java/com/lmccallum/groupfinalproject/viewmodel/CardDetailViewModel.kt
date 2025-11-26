@@ -22,8 +22,9 @@ class CardDetailViewModel : ViewModel() {
     private val _searchError = MutableStateFlow<String?>(null)
     val searchError: StateFlow<String?> = _searchError.asStateFlow()
 
-    fun searchCard(cardName: String)
-    {
+
+    //Lets user know if the card isn't a thing or they spelt it wrong
+    fun searchCard(cardName: String) {
         if (cardName.isBlank()) return
 
         _isLoading.value = true
@@ -35,13 +36,14 @@ class CardDetailViewModel : ViewModel() {
                 _currentCard.value = card
                 _isLoading.value = false
 
-                if (card == null)
-                    _searchError.value = "Card not found: '$cardName'"
-
+                if (card == null) {
+                    _searchError.value = "Card '$cardName' either doesn't exist or is spelled wrong"
+                }
             }
         }
     }
 
+    //Same thing as the other function but for scanning
     fun searchCardFromScan(ocrText: String)
     {
         _isLoading.value = true
