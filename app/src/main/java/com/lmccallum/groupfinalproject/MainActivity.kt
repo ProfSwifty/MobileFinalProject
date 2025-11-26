@@ -23,7 +23,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        //MVVM - Initialize ViewModel
+        //MVVM
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
 
         setupUI()
@@ -31,10 +31,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupUI() {
-        // Set app description
+        //App description
         binding.tvAppDescription.text = viewModel.appDescription
-
-        // Display team members
         displayTeamMembers()
     }
 
@@ -57,15 +55,10 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    //All the buttons for the main menu that lead to the other activities
+    //Buttons to the other Activities other than Translation since thats handled in Card Details
     private fun setupClickListeners() {
         binding.btnScanner.setOnClickListener {
             val intent = Intent(this, ScannerActivity::class.java)
-            startActivity(intent)
-        }
-
-        binding.btnTranslation.setOnClickListener {
-            val intent = Intent(this, TranslationActivity::class.java)
             startActivity(intent)
         }
 
