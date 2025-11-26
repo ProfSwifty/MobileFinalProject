@@ -6,4 +6,9 @@
     <string name="translate_text_button">Translate Text</string>
     <string name="view_card_details_button">View Card Details</string>
     <string name="team_members_title">Team Members:</string>
+
+    <string name="search_mtg_cards_title">Search MTG Cards</string>
+    <string name="search_card_hint">Enter card name (e.g., \'Black Lotus\')</string>
+    <string name="search_card_button">Search Card</string>
+    <string name="translate_card_button">Translate This Card</string>
 </resources>
