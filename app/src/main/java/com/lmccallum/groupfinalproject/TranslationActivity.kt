@@ -39,6 +39,10 @@ class TranslationActivity : AppCompatActivity() {
         binding.btnSelectFile.setOnClickListener {
             showFileSelectionDialog()
         }
+
+        binding.goBackButton.setOnClickListener {
+            finish()
+        }
     }
 
     private fun displayCardFromPdf(pdfFile: File) {
