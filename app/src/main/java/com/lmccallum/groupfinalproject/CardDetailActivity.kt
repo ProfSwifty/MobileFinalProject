@@ -1,6 +1,10 @@
 package com.lmccallum.groupfinalproject
 
+import android.annotation.SuppressLint
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.pdf.PdfDocument
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
@@ -10,12 +14,22 @@ import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.lmccallum.groupfinalproject.databinding.ActivityCardDetailBinding
 import com.lmccallum.groupfinalproject.viewmodel.CardDetailViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.File
+import java.io.FileOutputStream
+import java.text.SimpleDateFormat
+import java.util.*
 
 class CardDetailActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityCardDetailBinding
     private lateinit var viewModel: CardDetailViewModel
+
+    companion object {
+        const val SCANNED_CARDS_DIR = "scanned_cards"
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,12 +53,17 @@ class CardDetailActivity : AppCompatActivity() {
             val searchText = binding.etSearch.text.toString().trim()
             if (searchText.isNotEmpty())
                 viewModel.searchCard(searchText)
-
         }
 
+        binding.btnGoBack.setOnClickListener {
+            finish()
+        }
+
+        //Translate button saves card IMAGE as PDF
         binding.btnTranslate.setOnClickListener {
-            val intent = Intent(this, TranslationActivity::class.java)
-            startActivity(intent)
+            viewModel.currentCard.value?.let { card ->
+                saveCardAsPdf(card)
+            }
         }
 
         binding.etSearch.setOnEditorActionListener { _, actionId, _ ->
@@ -54,13 +73,136 @@ class CardDetailActivity : AppCompatActivity() {
                 {
                     viewModel.searchCard(searchText)
                     true
-                } else {
-                    false
                 }
-            } else {
+                else
+                    false
+
+            }
+            else
                 false
+
+        }
+    }
+
+    //Save card IMAGE as PDF
+    @SuppressLint("SetTextI18n")
+    private fun saveCardAsPdf(card: com.lmccallum.groupfinalproject.model.ScryfallCard) {
+        lifecycleScope.launch {
+            try {
+                //Create scanned_cards directory if it doesn't exist
+                val scannedDir = File(filesDir, SCANNED_CARDS_DIR)
+                if (!scannedDir.exists()) scannedDir.mkdirs()
+
+                val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+                val safeCardName = card.name.replace("[^a-zA-Z0-9]".toRegex(), "_")
+                val fileName = "search_${safeCardName}_$timeStamp.pdf"
+                val outputFile = File(scannedDir, fileName)
+
+                card.image_uris?.get("normal")?.let { imageUrl ->
+                    downloadAndCreatePdf(imageUrl, outputFile, card.name)
+                } ?: run {
+                    createCardInfoPdf(card, outputFile)
+                }
+
+            } catch (e: Exception) {
+                e.printStackTrace()
+                binding.tvError.text = "Failed to save card as PDF"
+                binding.tvError.visibility = View.VISIBLE
             }
         }
+    }
+
+    //Download card image and create PDF
+    @SuppressLint("SetTextI18n")
+    private fun downloadAndCreatePdf(imageUrl: String, outputFile: File, cardName: String) {
+        lifecycleScope.launch {
+            try {
+                // Download the card image
+                val bitmap = downloadImage(imageUrl)
+                if (bitmap != null)
+                {
+                    //Create PDF with the card image
+                    createImagePdf(bitmap, outputFile, cardName)
+
+                    val intent = Intent(this@CardDetailActivity, TranslationActivity::class.java).apply {
+                        putExtra("SCANNED_PDF_PATH", outputFile.absolutePath)
+                    }
+                    startActivity(intent)
+                }
+                else
+                {
+                    binding.tvError.text = "Failed to download card image"
+                    binding.tvError.visibility = View.VISIBLE
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                binding.tvError.text = "Failed to create PDF"
+                binding.tvError.visibility = View.VISIBLE
+            }
+        }
+    }
+
+    //Download image from URL
+    private suspend fun downloadImage(imageUrl: String): Bitmap? {
+        return withContext(Dispatchers.IO) {
+            try {
+                val url = java.net.URL(imageUrl)
+                val connection = url.openConnection() as java.net.HttpURLConnection
+                connection.doInput = true
+                connection.connect()
+                val inputStream = connection.inputStream
+                BitmapFactory.decodeStream(inputStream)
+            } catch (e: Exception) {
+                null
+            }
+        }
+    }
+
+    //Create PDF with card image
+    private fun createImagePdf(bitmap: Bitmap, outputFile: File, cardName: String) {
+        val document = PdfDocument()
+        val pageInfo = PdfDocument.PageInfo.Builder(bitmap.width, bitmap.height, 1).create()
+        val page = document.startPage(pageInfo)
+        val canvas = page.canvas
+
+        //Draw the card image on the entire PDF page
+        canvas.drawBitmap(bitmap, 0f, 0f, null)
+
+        document.finishPage(page)
+
+        //Save PDF
+        document.writeTo(FileOutputStream(outputFile))
+        document.close()
+    }
+
+    //A fallback if no image is available
+    private fun createCardInfoPdf(card: com.lmccallum.groupfinalproject.model.ScryfallCard, outputFile: File) {
+        val document = PdfDocument()
+
+        val pageInfo = PdfDocument.PageInfo.Builder(300, 400, 1).create()
+        val page = document.startPage(pageInfo)
+        val canvas = page.canvas
+
+        val paint = android.graphics.Paint()
+        paint.textSize = 12f
+
+        var yPos = 20f
+        canvas.drawText("Card: ${card.name}", 10f, yPos, paint)
+        yPos += 20f
+        canvas.drawText("Mana Cost: ${card.mana_cost ?: "None"}", 10f, yPos, paint)
+        yPos += 20f
+        canvas.drawText("Type: ${card.type_line}", 10f, yPos, paint)
+        yPos += 20f
+        canvas.drawText("Text: ${card.oracle_text ?: "No abilities"}", 10f, yPos, paint)
+
+        document.finishPage(page)
+        document.writeTo(FileOutputStream(outputFile))
+        document.close()
+
+        val intent = Intent(this, TranslationActivity::class.java).apply {
+            putExtra("SCANNED_PDF_PATH", outputFile.absolutePath)
+        }
+        startActivity(intent)
     }
 
     private fun observeViewModel() {
@@ -94,6 +236,7 @@ class CardDetailActivity : AppCompatActivity() {
         }
     }
 
+    @SuppressLint("SetTextI18n")
     private fun displayCard(card: com.lmccallum.groupfinalproject.model.ScryfallCard) {
         binding.btnTranslate.visibility = View.VISIBLE
 
@@ -110,37 +253,40 @@ class CardDetailActivity : AppCompatActivity() {
         binding.tvCardName.text = card.name
 
         //Mana Cost
-        binding.tvManaCost.text = if (!card.mana_cost.isNullOrEmpty()) {
+        binding.tvManaCost.text = if (!card.mana_cost.isNullOrEmpty())
             "Mana Cost: ${convertManaCostToText(card.mana_cost)}"
-        } else {
+        else
             "Mana Cost: None"
-        }
+
 
         //Card Type
         binding.tvType.text = card.type_line
 
         //Card Text with readable symbols
-        binding.tvCardText.text = if (!card.oracle_text.isNullOrEmpty()) {
+        binding.tvCardText.text = if (!card.oracle_text.isNullOrEmpty())
             "Card Text:\n${convertCardTextToReadable(card.oracle_text)}"
-        } else {
+        else
             "Card Text: No abilities"
-        }
+
 
         //Flavor Text
-        if (!card.flavor_text.isNullOrEmpty()) {
+        if (!card.flavor_text.isNullOrEmpty())
+        {
             binding.tvFlavorText.text = "Flavor Text:\n\"${card.flavor_text}\""
             binding.tvFlavorText.visibility = View.VISIBLE
-        } else {
-            binding.tvFlavorText.visibility = View.GONE
         }
+        else
+            binding.tvFlavorText.visibility = View.GONE
+
 
         //Power/Toughness
-        if (!card.power.isNullOrEmpty() && !card.toughness.isNullOrEmpty()) {
+        if (!card.power.isNullOrEmpty() && !card.toughness.isNullOrEmpty())
+        {
             binding.tvPowerToughness.text = "Power/Toughness: ${card.power}/${card.toughness}"
             binding.tvPowerToughness.visibility = View.VISIBLE
-        } else {
-            binding.tvPowerToughness.visibility = View.GONE
         }
+        else
+            binding.tvPowerToughness.visibility = View.GONE
 
         binding.tvError.visibility = View.GONE
     }
@@ -149,7 +295,7 @@ class CardDetailActivity : AppCompatActivity() {
     private fun convertManaCostToText(manaCost: String): String {
         val symbols = mutableListOf<String>()
 
-        // Extract all symbols and convert them
+        //Extract all symbols and convert them
         val regex = Regex("\\{([^}]+)\\}")
         regex.findAll(manaCost).forEach { match ->
             val symbol = match.groupValues[1]
@@ -204,9 +350,9 @@ class CardDetailActivity : AppCompatActivity() {
 
         return if (groupedSymbols.isNotEmpty()) {
             groupedSymbols.joinToString(", ")
-        } else {
-            "None"
         }
+        else
+            "None"
     }
 
     //Function to convert card text symbols to readable text

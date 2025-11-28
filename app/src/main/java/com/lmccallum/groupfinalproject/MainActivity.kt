@@ -1,5 +1,6 @@
 package com.lmccallum.groupfinalproject
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.Typeface
 import androidx.appcompat.app.AppCompatActivity
@@ -38,6 +39,7 @@ class MainActivity : AppCompatActivity() {
 
 
     //Displays our team members
+    @SuppressLint("SetTextI18n")
     private fun displayTeamMembers() {
         val container = binding.teamMembersContainer
 
@@ -59,6 +61,11 @@ class MainActivity : AppCompatActivity() {
     private fun setupClickListeners() {
         binding.btnScanner.setOnClickListener {
             val intent = Intent(this, ScannerActivity::class.java)
+            startActivity(intent)
+        }
+
+        binding.btnTranslation.setOnClickListener {
+            val intent = Intent(this, TranslationActivity::class.java)
             startActivity(intent)
         }
 

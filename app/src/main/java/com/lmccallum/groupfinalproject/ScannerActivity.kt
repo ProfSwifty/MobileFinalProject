@@ -1,5 +1,6 @@
 package com.lmccallum.groupfinalproject
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -20,7 +21,8 @@ class ScannerActivity : AppCompatActivity() {
     private lateinit var scanner: GmsDocumentScanner
     private var scannedPdfUri: Uri? = null
 
-    companion object {
+    companion object
+    {
         const val SCANNED_CARDS_DIR = "scanned_cards"
     }
 
@@ -41,11 +43,12 @@ class ScannerActivity : AppCompatActivity() {
         startScanner()
     }
 
+    @SuppressLint("SetTextI18n")
     private val scannerLauncher =
         registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result ->
 
             if (result.resultCode == RESULT_OK) {
-                scannerBinding.feedbackText.setText("Card scanned successfully!")
+                scannerBinding.feedbackText.text = "Card scanned successfully!"
                 val scanResult =
                     GmsDocumentScanningResult.fromActivityResultIntent(result.data)
 
@@ -64,10 +67,11 @@ class ScannerActivity : AppCompatActivity() {
                 }
             }
             else{
-                scannerBinding.feedbackText.setText("Error: Unable to scan card")
+                scannerBinding.feedbackText.text = "Error: Unable to scan card"
             }
         }
 
+    @SuppressLint("SetTextI18n")
     private fun startScanner() {
         scanner.getStartScanIntent(this)
             .addOnSuccessListener { intentSender ->
@@ -76,14 +80,14 @@ class ScannerActivity : AppCompatActivity() {
                 )
             }
             .addOnFailureListener {
-                scannerBinding.feedbackText.setText("ERROR: Unable to build scanner")
+                scannerBinding.feedbackText.text = "ERROR: Unable to build scanner"
             }
     }
 
+    @SuppressLint("SetTextI18n")
     private fun savePdfToInternalStorage(pdfUri: Uri) {
         try {
-            //SAVES TO: app's internal storage in /scanned_cards/ folder
-            // ILE NAME: scan_YYYYMMDD_HHmmss.pdf (timestamped)
+            //Saves to the app's internal storage in /scanned_cards/ folder
             //ACCESS IN TRANSLATION: Use getLatestScannedPdf() or pass file path via Intent
             val scannedDir = File(filesDir, SCANNED_CARDS_DIR)
             if (!scannedDir.exists()) {
@@ -101,12 +105,10 @@ class ScannerActivity : AppCompatActivity() {
             inputStream?.close()
             outputStream.close()
 
-            //Remove this println in final version
-            println("PDF saved to: ${outputFile.absolutePath}")
-            scannerBinding.feedbackText.setText("PDF saved: $fileName")
+            scannerBinding.feedbackText.text = "PDF saved: $fileName"
 
         } catch (e: Exception) {
-            scannerBinding.feedbackText.setText("Error: Failed to save PDF")
+            scannerBinding.feedbackText.text = "Error: Failed to save PDF"
         }
     }
 
@@ -121,6 +123,7 @@ class ScannerActivity : AppCompatActivity() {
         }?.maxByOrNull { it.lastModified() }
     }
 
+    @SuppressLint("SetTextI18n")
     private fun setupClickListeners() {
         scannerBinding.scannerButton.setOnClickListener {
             startScanner()
@@ -135,7 +138,7 @@ class ScannerActivity : AppCompatActivity() {
                 }
                 startActivity(intent)
             } else {
-                scannerBinding.feedbackText.setText("ERROR: No scanned PDF found")
+                scannerBinding.feedbackText.text = "ERROR: No scanned PDF found"
             }
         }
 

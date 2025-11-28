@@ -36,9 +36,8 @@ class CardDetailViewModel : ViewModel() {
                 _currentCard.value = card
                 _isLoading.value = false
 
-                if (card == null) {
+                if (card == null)
                     _searchError.value = "Card '$cardName' either doesn't exist or is spelled wrong"
-                }
             }
         }
     }
@@ -57,7 +56,6 @@ class CardDetailViewModel : ViewModel() {
 
                 if (card == null)
                     _searchError.value = "Could not find card from scanned text"
-
             }
         }
     }

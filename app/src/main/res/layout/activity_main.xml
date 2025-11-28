@@ -70,6 +70,18 @@
                 app:layout_constraintTop_toBottomOf="@+id/tvAppDescription" />
 
             <Button
+                android:id="@+id/btnTranslation"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:backgroundTint="#806D207B"
+                android:text="@string/tranlsation_button"
+                android:textColor="@android:color/white"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/btnScanner" />
+
+            <Button
                 android:id="@+id/btnCardDetails"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -79,7 +91,7 @@
                 android:backgroundTint="#806D207B"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/btnScanner" />
+                app:layout_constraintTop_toBottomOf="@+id/btnTranslation" />
 
             <!-- Team Members Title -->
             <TextView

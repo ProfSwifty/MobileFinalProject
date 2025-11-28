@@ -18,7 +18,8 @@ class CardRepository {
 
     fun searchCardFromScan(ocrText: String): Flow<ScryfallCard?> = flow {
         val cardName = extractCardNameFromOCR(ocrText)
-        if (cardName.isNotEmpty()) {
+        if (cardName.isNotEmpty())
+        {
             try {
                 val card = apiService.getCardByName(cardName)
                 emit(card)
@@ -27,7 +28,6 @@ class CardRepository {
             }
         } else
             emit(null)
-
     }
 
     private fun extractCardNameFromOCR(ocrText: String): String {
