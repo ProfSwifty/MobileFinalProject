@@ -17,4 +17,11 @@
     <string name="scannerButtonText">Scan Again</string>
     <string name="translate_card_button">Translate This Card</string>
     <string name="returnToMenu">Return to Menu</string>
+
+    <!--Translate Page-->
+    <string-array name="languages">
+        <item>English</item>
+        <item>French</item>
+        <item>Spanish</item>
+    </string-array>
 </resources>

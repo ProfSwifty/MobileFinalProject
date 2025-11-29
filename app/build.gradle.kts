@@ -60,6 +60,9 @@ dependencies {
     //However scanned images can be large this just makes resizing easier and helps with scanned images
     implementation("com.github.bumptech.glide:glide:5.0.5")
 
+    //implentation for translator
+    implementation("com.google.mlkit:translate:17.0.3")
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
