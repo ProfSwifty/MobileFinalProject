@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import android.graphics.pdf.PdfRenderer
 import android.os.Bundle
 import android.os.ParcelFileDescriptor
+import android.widget.ArrayAdapter
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
@@ -21,7 +22,7 @@ class TranslationActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         setupClickListeners()
-
+        setupLanguageSpinner()
         //Check if a PDF was passed from ScannerActivity or CardDetailActivity
         val pdfPath = intent.getStringExtra("SCANNED_PDF_PATH")
         if (pdfPath != null)
@@ -43,6 +44,18 @@ class TranslationActivity : AppCompatActivity() {
         binding.goBackButton.setOnClickListener {
             finish()
         }
+    }
+
+    private fun setupLanguageSpinner()
+    {
+        val adapter = ArrayAdapter.createFromResource(
+            this,
+            R.array.languages,
+            android.R.layout.simple_spinner_item
+        )
+
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_item)
+        binding.LanguageSpinner.adapter = adapter
     }
 
     private fun displayCardFromPdf(pdfFile: File) {

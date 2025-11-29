@@ -19,6 +19,11 @@
     <string name="returnToMenu">Return to Menu</string>
 
     <!--Translate Page-->
+    <string name="translationText">Translation</string>
+    <string name="TranslateAppearHereText">Translation will appear here…</string>
+    <string name="TranslatebtnText">Translate Card</string>
+    <string name="diffCardBtnText">Select Different Card</string>
+    <string name="OGCardText">Original Card</string>
     <string-array name="languages">
         <item>English</item>
         <item>French</item>
