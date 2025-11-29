@@ -11,10 +11,21 @@ import com.bumptech.glide.Glide
 import com.lmccallum.groupfinalproject.databinding.ActivityTranslationBinding
 import java.io.File
 
+import com.google.mlkit.vision.text.TextRecognition
+import com.google.mlkit.vision.text.latin.TextRecognizerOptions
+import com.google.mlkit.nl.translate.*
+import com.google.mlkit.vision.common.InputImage
+
 class TranslationActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityTranslationBinding
     private var currentPdfFile: File? = null
+    private var currentPdfPath: String? = null
+
+    companion object {
+        private const val KEY_PDF_PATH = "pdf_path"
+        private const val KEY_TRANSLATION_RESULT = "translation_result"
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,17 +34,82 @@ class TranslationActivity : AppCompatActivity() {
 
         setupClickListeners()
         setupLanguageSpinner()
-        //Check if a PDF was passed from ScannerActivity or CardDetailActivity
-        val pdfPath = intent.getStringExtra("SCANNED_PDF_PATH")
-        if (pdfPath != null)
-        {
-            val pdfFile = File(pdfPath)
-            if (pdfFile.exists())
-            {
-                currentPdfFile = pdfFile
-                displayCardFromPdf(pdfFile)
+
+        //Restore saved state if available (after rotation)
+        if (savedInstanceState != null) {
+            currentPdfPath = savedInstanceState.getString(KEY_PDF_PATH)
+            val savedTranslation = savedInstanceState.getString(KEY_TRANSLATION_RESULT)
+
+            //Restore translation result if it exists
+            savedTranslation?.let {
+                binding.tvTranslationResult.text = it
+            }
+
+            //Restore PDF file if it exists
+            currentPdfPath?.let { path ->
+                val pdfFile = File(path)
+                if (pdfFile.exists()) {
+                    currentPdfFile = pdfFile
+                    displayCardFromPdf(pdfFile)
+                }
+            }
+        } else {
+            //Check if a PDF was passed from ScannerActivity or CardDetailActivity
+            val pdfPath = intent.getStringExtra("SCANNED_PDF_PATH")
+            if (pdfPath != null) {
+                currentPdfPath = pdfPath
+                val pdfFile = File(pdfPath)
+                if (pdfFile.exists()) {
+                    currentPdfFile = pdfFile
+                    displayCardFromPdf(pdfFile)
+                }
             }
         }
+
+        binding.btnTranslate.setOnClickListener {
+            val pdf = currentPdfFile
+            if (pdf == null) {
+                showError("No file selected.")
+                return@setOnClickListener
+            }
+
+            val bitmap = extractFirstPageAsBitmap(pdf)
+            if (bitmap == null) {
+                showError("Unable to read PDF")
+                return@setOnClickListener
+            }
+
+            val selectedLanguage = binding.LanguageSpinner.selectedItem.toString()
+            val languageCode = getMLkitLanguage(selectedLanguage)
+
+            binding.tvTranslationResult.text = "Translating..."
+
+            extractTextFromBitMap(bitmap) { extractedText ->
+                if (extractedText.isBlank()) {
+                    showError("No Text detected.")
+                    return@extractTextFromBitMap
+                }
+
+                detectSourceLanguage(extractedText) { SourceLang ->
+                    if (SourceLang == null) {
+                        showError("Problem detecting Language.")
+                        return@detectSourceLanguage
+                    }
+
+                    translateText(extractedText, SourceLang, languageCode)
+                }
+            }
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        //Save current PDF path and translation result
+        currentPdfPath?.let {
+            outState.putString(KEY_PDF_PATH, it)
+        }
+        //Save the current translation result
+        outState.putString(KEY_TRANSLATION_RESULT, binding.tvTranslationResult.text.toString())
     }
 
     private fun setupClickListeners() {
@@ -46,8 +122,7 @@ class TranslationActivity : AppCompatActivity() {
         }
     }
 
-    private fun setupLanguageSpinner()
-    {
+    private fun setupLanguageSpinner() {
         val adapter = ArrayAdapter.createFromResource(
             this,
             R.array.languages,
@@ -56,6 +131,15 @@ class TranslationActivity : AppCompatActivity() {
 
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_item)
         binding.LanguageSpinner.adapter = adapter
+    }
+
+    private fun getMLkitLanguage(selection: String): String {
+        return when (selection) {
+            "English" -> TranslateLanguage.ENGLISH
+            "French" -> TranslateLanguage.FRENCH
+            "Spanish" -> TranslateLanguage.SPANISH
+            else -> TranslateLanguage.ENGLISH
+        }
     }
 
     private fun displayCardFromPdf(pdfFile: File) {
@@ -71,7 +155,7 @@ class TranslationActivity : AppCompatActivity() {
             } else
                 binding.ivCardDisplay.visibility = android.view.View.GONE
 
-            //Display file info
+            // Display file info
             if (pdfFile.name.startsWith("search_"))
             {
                 val cardName = extractCardNameFromFilename(pdfFile.name)
@@ -83,6 +167,9 @@ class TranslationActivity : AppCompatActivity() {
                 binding.tvCardName.text = "Scanned Card"
                 binding.tvCardType.text = "File: ${pdfFile.name}"
             }
+
+            currentPdfPath = pdfFile.absolutePath
+            currentPdfFile = pdfFile
 
         } catch (e: Exception) {
             e.printStackTrace()
@@ -101,8 +188,7 @@ class TranslationActivity : AppCompatActivity() {
             parcelFileDescriptor = ParcelFileDescriptor.open(pdfFile, ParcelFileDescriptor.MODE_READ_ONLY)
             pdfRenderer = PdfRenderer(parcelFileDescriptor)
 
-            if (pdfRenderer.pageCount > 0)
-            {
+            if (pdfRenderer.pageCount > 0) {
                 page = pdfRenderer.openPage(0)
 
                 //Create a bitmap with the same dimensions as the PDF page
@@ -121,6 +207,53 @@ class TranslationActivity : AppCompatActivity() {
             parcelFileDescriptor?.close()
         }
         return null
+    }
+
+    private fun extractTextFromBitMap(bitmap: Bitmap, callback: (String) -> Unit) {
+        val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
+        val image = InputImage.fromBitmap(bitmap, 0)
+
+        recognizer.process(image)
+            .addOnSuccessListener { result -> callback(result.text) }
+            .addOnFailureListener { showError("Failed to read text.") }
+    }
+
+    private fun detectSourceLanguage(text: String, callback: (String?) -> Unit) {
+        val languageDetector = com.google.mlkit.nl.languageid.LanguageIdentification.getClient()
+
+        languageDetector.identifyLanguage(text)
+            .addOnSuccessListener { langCode ->
+                if (langCode == "und")
+                    callback(null)
+                 else
+                    callback(langCode)
+            }
+            .addOnFailureListener {
+                callback(null)
+            }
+    }
+
+    private fun translateText(text: String, sourceLanguage: String, targetLanguage: String) {
+        val options = TranslatorOptions.Builder()
+            .setSourceLanguage(sourceLanguage)
+            .setTargetLanguage(targetLanguage)
+            .build()
+
+        val translator = Translation.getClient(options)
+
+        translator.downloadModelIfNeeded()
+            .addOnSuccessListener {
+                translator.translate(text)
+                    .addOnSuccessListener { translated ->
+                        binding.tvTranslationResult.text = translated
+                    }
+                    .addOnFailureListener {
+                        showError("Problem with translation.")
+                    }
+            }
+            .addOnFailureListener {
+                showError("Failed to download translation model.")
+            }
     }
 
     private fun extractCardNameFromFilename(filename: String): String {
@@ -158,8 +291,9 @@ class TranslationActivity : AppCompatActivity() {
             .setItems(fileNames.toTypedArray()) { _, which ->
                 val selectedFile = pdfFiles[which]
                 currentPdfFile = selectedFile
+                currentPdfPath = selectedFile.absolutePath
                 displayCardFromPdf(selectedFile)
-                //Clear previous translation result when new card is selected
+                //Clears previous translation when new card is selected
                 binding.tvTranslationResult.text = "Select 'Translate' to begin translation"
             }
             .setNegativeButton("Cancel", null)
@@ -172,9 +306,5 @@ class TranslationActivity : AppCompatActivity() {
             .setMessage(message)
             .setPositiveButton("OK", null)
             .show()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
     }
 }

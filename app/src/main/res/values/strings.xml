@@ -24,6 +24,7 @@
     <string name="TranslatebtnText">Translate Card</string>
     <string name="diffCardBtnText">Select Different Card</string>
     <string name="OGCardText">Original Card</string>
+    <string name="image_of_scanned_card">Image of Scanned Card</string>
     <string-array name="languages">
         <item>English</item>
         <item>French</item>
