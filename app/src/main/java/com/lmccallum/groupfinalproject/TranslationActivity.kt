@@ -11,6 +11,12 @@ import com.bumptech.glide.Glide
 import com.lmccallum.groupfinalproject.databinding.ActivityTranslationBinding
 import java.io.File
 
+import com.google.mlkit.vision.text.TextRecognition
+import com.google.mlkit.vision.text.latin.TextRecognizerOptions
+import com.google.mlkit.nl.translate.*
+import com.google.mlkit.vision.common.InputImage
+import kotlin.io.path.Path
+
 class TranslationActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityTranslationBinding
@@ -32,6 +38,43 @@ class TranslationActivity : AppCompatActivity() {
             {
                 currentPdfFile = pdfFile
                 displayCardFromPdf(pdfFile)
+            }
+        }
+
+        binding.btnTranslate.setOnClickListener {
+            val pdf = currentPdfFile
+            if (pdf == null)
+            {
+                showError("No file selected.")
+                return@setOnClickListener
+            }
+
+            val bitmap = extractFirstPageAsBitmap(pdf)
+            if (bitmap == null)
+            {
+                showError("Unable to read PDF")
+                return@setOnClickListener
+            }
+
+            val selectedLanguage = binding.LanguageSpinner.selectedItem.toString()
+            val languageCode = getMLkitLanguage(selectedLanguage)
+
+            binding.tvTranslationResult.text ="Translating..."
+
+            extractTextFromBitMap(bitmap) {
+                extractedText -> if (extractedText.isBlank()){
+                    showError("No Text detected.")
+                return@extractTextFromBitMap
+            }
+
+                detectSourceLangauge(extractedText) {SourceLang ->
+                    if(SourceLang == null){
+                        showError("Problem detecting Language.")
+                        return@detectSourceLangauge
+                    }
+
+                    translateText(extractedText,SourceLang,languageCode)
+                }
             }
         }
     }
@@ -56,6 +99,16 @@ class TranslationActivity : AppCompatActivity() {
 
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_item)
         binding.LanguageSpinner.adapter = adapter
+    }
+
+    private fun getMLkitLanguage(selection:String):String {
+        return when (selection)
+        {
+         "English" -> TranslateLanguage.ENGLISH
+         "French" -> TranslateLanguage.FRENCH
+         "Spanish" -> TranslateLanguage.SPANISH
+         else -> TranslateLanguage.ENGLISH
+        }
     }
 
     private fun displayCardFromPdf(pdfFile: File) {
@@ -121,6 +174,57 @@ class TranslationActivity : AppCompatActivity() {
             parcelFileDescriptor?.close()
         }
         return null
+    }
+
+    private fun extractTextFromBitMap(bitmap: Bitmap, callback: (String) -> Unit)
+    {
+        val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
+        val image = InputImage.fromBitmap(bitmap, 0)
+
+        recognizer.process(image)
+            .addOnSuccessListener { result -> callback(result.text) }
+            .addOnFailureListener { showError("Failed to read text.") }
+    }
+
+    private fun detectSourceLangauge(text: String,callback: (String?) -> Unit)
+    {
+        val languageDetector = com.google.mlkit.nl.languageid.LanguageIdentification.getClient()
+
+        languageDetector.identifyLanguage(text)
+            .addOnSuccessListener { langCode ->
+                if (langCode == "und")
+                {
+                    callback(null)
+                }
+                else
+                {
+                    callback(langCode)
+                }
+            }
+            .addOnFailureListener {
+                callback(null)
+            }
+    }
+
+    private fun translateText(text: String, sourceLanguage: String, targetLanguage: String)
+    {
+        val options = TranslatorOptions.Builder()
+            //Need to find a way to detect the language input
+            .setSourceLanguage(sourceLanguage)
+            .setTargetLanguage(targetLanguage)
+            .build()
+
+        val translator = Translation.getClient(options)
+
+        translator.downloadModelIfNeeded()
+            .addOnSuccessListener {
+                translator.translate(text)
+                    .addOnSuccessListener { translated -> binding.tvTranslationResult.text = translated
+                    }
+                    .addOnFailureListener {
+                        showError("Problem with translation.")
+                    }
+            }
     }
 
     private fun extractCardNameFromFilename(filename: String): String {
