@@ -13,7 +13,7 @@
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:textColor="@android:color/white"
         android:textSize="20sp"
         android:text="@string/mtg_card_scanner"
@@ -23,9 +23,6 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <!-- Feedback Text -->
-
-    <!-- Card Image - Centered and responsive -->
-
     <TextView
         android:id="@+id/feedbackText"
         android:layout_width="0dp"
@@ -36,35 +33,18 @@
         android:textColor="@android:color/white"
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView" />
+        app:layout_constraintStart_toStartOf="@+id/verticalGuideline"
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageView
-        android:id="@+id/cardScannedInImage"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="16dp"
-        android:scaleType="fitCenter"
-        app:layout_constraintBottom_toTopOf="@+id/guideline"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHeight_max="350dp"
-        app:layout_constraintHorizontal_bias="0.496"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/feedbackText"
-        app:layout_constraintVertical_bias="1.0"
-        app:layout_constraintWidth_max="250dp"
-        tools:srcCompat="@tools:sample/avatars" />
-
+    <!-- Guideline for 50/50 split -->
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline"
+        android:id="@+id/verticalGuideline"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.75" />
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.50" />
 
-    <!-- Scanner Button -->
+    <!-- Buttons Stack -->
     <Button
         android:id="@+id/scannerButton"
         android:layout_width="0dp"
@@ -72,14 +52,13 @@
         android:backgroundTint="#806D207B"
         android:text="@string/scannerButtonText"
         android:textColor="@android:color/white"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/verticalGuideline"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/guideline"
-        android:layout_marginTop="16dp"
-        android:layout_marginStart="32dp"
-        android:layout_marginEnd="32dp" />
+        app:layout_constraintTop_toBottomOf="@+id/feedbackText"
+        android:layout_marginTop="32dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp" />
 
-    <!-- Translate Button -->
     <Button
         android:id="@+id/translateCardButton"
         android:layout_width="0dp"
@@ -87,12 +66,28 @@
         android:backgroundTint="#806D207B"
         android:text="@string/translate_card_button"
         android:textColor="@android:color/white"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/verticalGuideline"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/scannerButton"
         android:layout_marginTop="16dp"
-        android:layout_marginStart="32dp"
-        android:layout_marginEnd="32dp" />
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp" />
+
+    <!-- Card Image -->
+    <ImageView
+        android:id="@+id/cardScannedInImage"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="16dp"
+        android:contentDescription="@string/image_of_scanned_card"
+        android:scaleType="fitCenter"
+        app:layout_constraintBottom_toTopOf="@+id/goBackButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@id/verticalGuideline"
+        app:layout_constraintTop_toBottomOf="@+id/feedbackText"
+        app:layout_constraintWidth_max="300dp"
+        app:layout_constraintHeight_max="420dp"
+        tools:srcCompat="@tools:sample/avatars" />
 
     <!-- Go Back Button -->
     <Button
@@ -105,8 +100,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/translateCardButton"
-        android:layout_marginTop="16dp"
         android:layout_marginBottom="16dp"
         android:layout_marginStart="32dp"
         android:layout_marginEnd="32dp" />

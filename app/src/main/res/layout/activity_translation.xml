@@ -4,18 +4,28 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/translationland"
-    android:padding="16dp">
+    android:padding="32dp">
 
-    <!-- Top Half: Card Display Section -->
+    <View
+        android:id="@+id/overlay"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="#80000000"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- Card Display Section -->
     <TextView
         android:id="@+id/tvOriginalCardLabel"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:textColor="@android:color/white"
+        android:gravity="center"
         android:text="@string/OGCardText"
+        android:textColor="@android:color/white"
         android:textSize="18sp"
         android:textStyle="bold"
-        android:gravity="center"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -24,62 +34,60 @@
         android:id="@+id/ivCardDisplay"
         android:layout_width="200dp"
         android:layout_height="280dp"
+        android:layout_marginTop="8dp"
+        android:background="@android:color/transparent"
         android:contentDescription="@string/image_of_scanned_card"
         android:scaleType="fitCenter"
-        android:background="@android:color/transparent"
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvOriginalCardLabel"
-        android:layout_marginTop="8dp" />
+        app:layout_constraintTop_toBottomOf="@+id/tvOriginalCardLabel" />
 
     <TextView
         android:id="@+id/tvCardName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
         android:gravity="center"
         android:textColor="@android:color/white"
         android:textSize="16sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ivCardDisplay"
-        android:layout_marginTop="8dp" />
+        app:layout_constraintTop_toBottomOf="@+id/ivCardDisplay" />
 
     <TextView
         android:id="@+id/tvCardType"
         android:layout_width="0dp"
-        android:textColor="@android:color/white"
         android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
         android:gravity="center"
+        android:textColor="@android:color/white"
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvCardName"
-        android:layout_marginTop="4dp" />
+        app:layout_constraintTop_toBottomOf="@+id/tvCardName" />
 
     <!-- File Selection Button -->
     <Button
         android:id="@+id/btnSelectFile"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
         android:backgroundTint="#806D207B"
         android:text="@string/diffCardBtnText"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvCardType"
-        android:layout_marginTop="16dp"
-        />
+        app:layout_constraintTop_toBottomOf="@+id/tvCardType" />
 
     <Spinner
         android:id="@+id/LanguageSpinner"
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:backgroundTint="#906D207B"
-        android:background="@android:color/white"
-        app:layout_constraintTop_toBottomOf="@id/btnSelectFile"
         android:layout_marginTop="6dp"
-    />
+        android:background="@android:color/white"
+        android:backgroundTint="#906D207B"
+        app:layout_constraintTop_toBottomOf="@id/btnSelectFile" />
 
     <!-- Horizontal Guideline to split screen 50/50 -->
     <androidx.constraintlayout.widget.Guideline
@@ -94,23 +102,23 @@
         android:id="@+id/divider"
         android:layout_width="0dp"
         android:layout_height="1dp"
+        android:layout_marginTop="55dp"
+        android:layout_marginBottom="16dp"
         android:background="#CCCCCC"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnSelectFile"
-        android:layout_marginTop="55dp"
-        android:layout_marginBottom="16dp" />
+        app:layout_constraintTop_toBottomOf="@+id/btnSelectFile" />
 
     <!-- Translation Section -->
     <TextView
         android:id="@+id/tvTranslationLabel"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:textColor="@android:color/white"
+        android:gravity="center"
         android:text="@string/translationText"
+        android:textColor="@android:color/white"
         android:textSize="18sp"
         android:textStyle="bold"
-        android:gravity="center"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/divider" />
@@ -119,23 +127,23 @@
         android:id="@+id/scrollViewTranslation"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:layout_marginTop="8dp"
         android:padding="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvTranslationLabel"
-        android:layout_marginTop="8dp">
+        app:layout_constraintTop_toBottomOf="@+id/tvTranslationLabel">
 
         <TextView
             android:id="@+id/tvTranslationResult"
-            android:textColor="@android:color/white"
-            android:background="@android:color/transparent"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
             android:gravity="center"
+            android:padding="16dp"
             android:text="@string/TranslateAppearHereText"
-            android:textSize="14sp"
-            android:padding="16dp" />
+            android:textColor="@android:color/white"
+            android:textSize="14sp" />
 
     </ScrollView>
 
@@ -144,29 +152,29 @@
         android:id="@+id/btnTranslate"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="@string/TranslatebtnText"
+        android:layout_marginBottom="45dp"
         android:backgroundTint="#806D207B"
+        android:text="@string/TranslatebtnText"
         android:textColor="@android:color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginBottom="45dp" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <!-- Go Back Button -->
     <Button
         android:id="@+id/goBackButton"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginBottom="16dp"
         android:backgroundTint="#806D207B"
         android:text="@string/returnToMenu"
         android:textColor="@android:color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnTranslate"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="16dp"
-        android:layout_marginStart="32dp"
-        android:layout_marginEnd="32dp" />
+        app:layout_constraintTop_toBottomOf="@+id/btnTranslate" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

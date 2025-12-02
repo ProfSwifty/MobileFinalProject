@@ -47,7 +47,8 @@ class ScannerActivity : AppCompatActivity() {
     private val scannerLauncher =
         registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result ->
 
-            if (result.resultCode == RESULT_OK) {
+            if (result.resultCode == RESULT_OK)
+            {
                 scannerBinding.feedbackText.text = "Card scanned successfully!"
                 val scanResult =
                     GmsDocumentScanningResult.fromActivityResultIntent(result.data)
@@ -66,9 +67,8 @@ class ScannerActivity : AppCompatActivity() {
                     savePdfToInternalStorage(pdf.uri)
                 }
             }
-            else{
+            else
                 scannerBinding.feedbackText.text = "Error: Unable to scan card"
-            }
         }
 
     @SuppressLint("SetTextI18n")
@@ -88,11 +88,10 @@ class ScannerActivity : AppCompatActivity() {
     private fun savePdfToInternalStorage(pdfUri: Uri) {
         try {
             //Saves to the app's internal storage in /scanned_cards/ folder
-            //ACCESS IN TRANSLATION: Use getLatestScannedPdf() or pass file path via Intent
+            //Use getLatestScannedPdf() or pass file path via Intent
             val scannedDir = File(filesDir, SCANNED_CARDS_DIR)
-            if (!scannedDir.exists()) {
+            if (!scannedDir.exists())
                 scannedDir.mkdirs()
-            }
 
             val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
             val fileName = "scan_${timeStamp}.pdf"
@@ -114,9 +113,8 @@ class ScannerActivity : AppCompatActivity() {
 
     private fun getLatestScannedPdf(): File? {
         val scannedDir = File(filesDir, SCANNED_CARDS_DIR)
-        if (!scannedDir.exists()) {
+        if (!scannedDir.exists())
             return null
-        }
 
         return scannedDir.listFiles { file ->
             file.isFile && file.name.endsWith(".pdf")
@@ -132,14 +130,14 @@ class ScannerActivity : AppCompatActivity() {
         scannerBinding.translateCardButton.setOnClickListener {
             val latestPdf = getLatestScannedPdf()
 
-            if (latestPdf != null && latestPdf.exists()) {
+            if (latestPdf != null && latestPdf.exists())
+            {
                 val intent = Intent(this, TranslationActivity::class.java).apply {
                     putExtra("SCANNED_PDF_PATH", latestPdf.absolutePath)
                 }
                 startActivity(intent)
-            } else {
+            } else
                 scannerBinding.feedbackText.text = "ERROR: No scanned PDF found"
-            }
         }
 
         scannerBinding.goBackButton.setOnClickListener {
