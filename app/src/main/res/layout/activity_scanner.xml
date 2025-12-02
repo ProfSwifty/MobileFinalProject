@@ -23,9 +23,6 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <!-- Feedback Text -->
-
-    <!-- Card Image - Centered and responsive -->
-
     <TextView
         android:id="@+id/feedbackText"
         android:layout_width="0dp"
@@ -40,6 +37,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView" />
 
+    <!-- Card Image -->
     <ImageView
         android:id="@+id/cardScannedInImage"
         android:layout_width="0dp"
