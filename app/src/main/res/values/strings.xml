@@ -4,7 +4,7 @@
     <string name="app_title">MTG Card Scanner</string>
     <string name="app_description">Magic: The Gathering Card Scanner/Translator - Scan and translate MTG cards in foreign languages</string>
     <string name="scan_card_button">Scan Card</string>
-    <string name="tranlsation_button">Translate Card</string>
+    <string name="translation_button">Translate Card</string>
     <string name="view_card_details_button">Search/View Card Details</string>
     <string name="team_members_title">Team Members:</string>
 
@@ -17,6 +17,8 @@
     <string name="scannerButtonText">Scan Again</string>
     <string name="translate_card_button">Translate This Card</string>
     <string name="returnToMenu">Return to Menu</string>
+    <string name="details">Details…</string>
+    <string name="mtg_card_scanner">Scan MTG Cards</string>
 
     <!--Translate Page-->
     <string name="translationText">Translation</string>

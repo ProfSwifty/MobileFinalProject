@@ -13,6 +13,16 @@
         android:padding="12dp"
         android:minHeight="600dp">
 
+        <View
+            android:id="@+id/overlay"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="#80000000"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
         <!-- Original Card Section -->
         <TextView
             android:id="@+id/tvOriginalCardLabel"
@@ -89,12 +99,12 @@
         <Spinner
             android:id="@+id/LanguageSpinner"
             android:layout_width="0dp"
-            android:layout_height="40dp"
+            android:layout_height="48dp"
             android:layout_marginLeft="8dp"
             android:layout_marginTop="8dp"
             android:layout_marginRight="8dp"
-            android:backgroundTint="#906D207B"
             android:background="@android:color/white"
+            android:backgroundTint="#906D207B"
             android:spinnerMode="dropdown"
             app:layout_constraintEnd_toStartOf="@id/verticalGuideline"
             app:layout_constraintStart_toStartOf="parent"

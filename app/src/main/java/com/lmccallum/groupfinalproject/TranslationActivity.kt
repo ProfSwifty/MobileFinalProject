@@ -1,10 +1,12 @@
 package com.lmccallum.groupfinalproject
 
+import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.graphics.pdf.PdfRenderer
 import android.os.Bundle
 import android.os.ParcelFileDescriptor
 import android.widget.ArrayAdapter
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
@@ -15,13 +17,13 @@ import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import com.google.mlkit.nl.translate.*
 import com.google.mlkit.vision.common.InputImage
-import kotlin.io.path.Path
 
 class TranslationActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityTranslationBinding
     private var currentPdfFile: File? = null
 
+    @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityTranslationBinding.inflate(layoutInflater)
@@ -62,18 +64,18 @@ class TranslationActivity : AppCompatActivity() {
             binding.tvTranslationResult.text ="Translating..."
 
             extractTextFromBitMap(bitmap) {
-                extractedText -> if (extractedText.isBlank()){
-                    showError("No Text detected.")
+                    extractedText -> if (extractedText.isBlank()){
+                showError("No Text detected.")
                 return@extractTextFromBitMap
             }
 
-                detectSourceLangauge(extractedText) {SourceLang ->
-                    if(SourceLang == null){
+                detectSourceLanguage(extractedText) { sourceLang ->
+                    if(sourceLang == null){
                         showError("Problem detecting Language.")
-                        return@detectSourceLangauge
+                        return@detectSourceLanguage
                     }
 
-                    translateText(extractedText,SourceLang,languageCode)
+                    translateText(extractedText,sourceLang,languageCode)
                 }
             }
         }
@@ -104,13 +106,14 @@ class TranslationActivity : AppCompatActivity() {
     private fun getMLkitLanguage(selection:String):String {
         return when (selection)
         {
-         "English" -> TranslateLanguage.ENGLISH
-         "French" -> TranslateLanguage.FRENCH
-         "Spanish" -> TranslateLanguage.SPANISH
-         else -> TranslateLanguage.ENGLISH
+            "English" -> TranslateLanguage.ENGLISH
+            "French" -> TranslateLanguage.FRENCH
+            "Spanish" -> TranslateLanguage.SPANISH
+            else -> TranslateLanguage.ENGLISH
         }
     }
 
+    @SuppressLint("SetTextI18n")
     private fun displayCardFromPdf(pdfFile: File) {
         try {
             //Extract and display the image from PDF
@@ -145,6 +148,7 @@ class TranslationActivity : AppCompatActivity() {
         }
     }
 
+    @SuppressLint("UseKtx")
     private fun extractFirstPageAsBitmap(pdfFile: File): Bitmap? {
         var parcelFileDescriptor: ParcelFileDescriptor? = null
         var pdfRenderer: PdfRenderer? = null
@@ -186,7 +190,7 @@ class TranslationActivity : AppCompatActivity() {
             .addOnFailureListener { showError("Failed to read text.") }
     }
 
-    private fun detectSourceLangauge(text: String,callback: (String?) -> Unit)
+    private fun detectSourceLanguage(text: String, callback: (String?) -> Unit)
     {
         val languageDetector = com.google.mlkit.nl.languageid.LanguageIdentification.getClient()
 
@@ -209,7 +213,7 @@ class TranslationActivity : AppCompatActivity() {
     private fun translateText(text: String, sourceLanguage: String, targetLanguage: String)
     {
         val options = TranslatorOptions.Builder()
-            //Need to find a way to detect the language input
+            //Detect the language input
             .setSourceLanguage(sourceLanguage)
             .setTargetLanguage(targetLanguage)
             .build()
@@ -219,7 +223,14 @@ class TranslationActivity : AppCompatActivity() {
         translator.downloadModelIfNeeded()
             .addOnSuccessListener {
                 translator.translate(text)
-                    .addOnSuccessListener { translated -> binding.tvTranslationResult.text = translated
+                    .addOnSuccessListener { translated ->
+                        val formatted = translated
+                            .replace(". ", ".\n\n")
+                            .replace("? ", "?\n\n")
+                            .replace("! ", "!\n\n")
+                            .trim()
+
+                        binding.tvTranslationResult.text = formatted
                     }
                     .addOnFailureListener {
                         showError("Problem with translation.")
@@ -236,6 +247,7 @@ class TranslationActivity : AppCompatActivity() {
             .replace("_", " ")
     }
 
+    @SuppressLint("SetTextI18n")
     private fun showFileSelectionDialog() {
         val scannedDir = File(filesDir, ScannerActivity.SCANNED_CARDS_DIR)
 
@@ -260,14 +272,63 @@ class TranslationActivity : AppCompatActivity() {
         AlertDialog.Builder(this)
             .setTitle("Select Card to Translate")
             .setItems(fileNames.toTypedArray()) { _, which ->
-                val selectedFile = pdfFiles[which]
-                currentPdfFile = selectedFile
-                displayCardFromPdf(selectedFile)
-                //Clear previous translation result when new card is selected
-                binding.tvTranslationResult.text = "Select 'Translate' to begin translation"
+                // Use .get() instead of [] for List<File>
+                showFileOptionsDialog(pdfFiles[which])
             }
             .setNegativeButton("Cancel", null)
             .show()
+    }
+
+    @SuppressLint("SetTextI18n")
+    private fun showFileOptionsDialog(file: File) {
+        AlertDialog.Builder(this)
+            .setTitle("File: ${file.name}")
+            .setMessage("What would you like to do with this file?")
+            .setPositiveButton("Select") { _, _ ->
+                // Select the file
+                currentPdfFile = file
+                displayCardFromPdf(file)
+                binding.tvTranslationResult.text = "Select 'Translate' to begin translation"
+            }
+            .setNegativeButton("Delete") { _, _ ->
+                // Confirm deletion
+                AlertDialog.Builder(this)
+                    .setTitle("Confirm Delete")
+                    .setMessage("Are you sure you want to delete '${file.name}'?")
+                    .setPositiveButton("Delete") { _, _ ->
+                        deleteFileAndRefresh(file)
+                    }
+                    .setNegativeButton("Cancel", null)
+                    .show()
+            }
+            .setNeutralButton("Cancel", null)
+            .show()
+    }
+
+    @SuppressLint("SetTextI18n")
+    private fun deleteFileAndRefresh(file: File) {
+        if (file.delete()) {
+            // If the current file is deleted, clear the display
+            if (currentPdfFile?.absolutePath == file.absolutePath) {
+                currentPdfFile = null
+                binding.ivCardDisplay.visibility = android.view.View.GONE
+                binding.tvCardName.text = "No file selected"
+                binding.tvCardType.text = "Select a file to translate"
+                binding.tvTranslationResult.text = "Select 'Translate' to begin translation"
+            }
+
+            // Show success message
+            Toast.makeText(
+                this,
+                "File deleted successfully",
+                Toast.LENGTH_SHORT
+            ).show()
+
+            // Refresh the file selection dialog
+            showFileSelectionDialog()
+        } else {
+            showError("Failed to delete file")
+        }
     }
 
     private fun showError(message: String) {
