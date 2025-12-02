@@ -1,6 +1,7 @@
 package com.lmccallum.groupfinalproject
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.pdf.PdfRenderer
 import android.os.Bundle
@@ -87,7 +88,8 @@ class TranslationActivity : AppCompatActivity() {
         }
 
         binding.goBackButton.setOnClickListener {
-            finish()
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
         }
     }
 

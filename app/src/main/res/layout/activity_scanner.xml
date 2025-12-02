@@ -13,10 +13,10 @@
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="24dp"
+        android:text="@string/mtg_card_scanner"
         android:textColor="@android:color/white"
         android:textSize="20sp"
-        android:text="@string/mtg_card_scanner"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -53,7 +53,6 @@
         app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/feedbackText"
-        app:layout_constraintVertical_bias="1.0"
         app:layout_constraintWidth_max="250dp"
         tools:srcCompat="@tools:sample/avatars" />
 
@@ -62,7 +61,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.75" />
+        app:layout_constraintGuide_percent="0.73" />
 
     <!-- Scanner Button -->
     <Button
