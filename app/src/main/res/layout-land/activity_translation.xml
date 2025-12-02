@@ -26,14 +26,14 @@
         <!-- Original Card Section -->
         <TextView
             android:id="@+id/tvOriginalCardLabel"
-            android:textColor="@android:color/white"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:gravity="center"
             android:text="@string/OGCardText"
+            android:textColor="@android:color/white"
             android:textSize="16sp"
             android:textStyle="bold"
-            android:gravity="center"
-            app:layout_constraintEnd_toStartOf="@+id/verticalGuideline"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -104,7 +104,7 @@
             android:layout_marginTop="8dp"
             android:layout_marginRight="8dp"
             android:background="@android:color/white"
-            android:backgroundTint="#906D207B"
+            android:backgroundTint="#6D207B"
             android:spinnerMode="dropdown"
             app:layout_constraintEnd_toStartOf="@id/verticalGuideline"
             app:layout_constraintStart_toStartOf="parent"
@@ -138,11 +138,12 @@
             android:id="@+id/tvTranslationLabel"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:gravity="center"
             android:text="@string/translationText"
             android:textColor="@android:color/white"
             android:textSize="16sp"
             android:textStyle="bold"
-            android:gravity="center"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@id/verticalGuideline"
             app:layout_constraintTop_toTopOf="parent" />

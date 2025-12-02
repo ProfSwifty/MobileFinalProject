@@ -21,10 +21,11 @@
         android:id="@+id/tvOriginalCardLabel"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
         android:gravity="center"
         android:text="@string/OGCardText"
         android:textColor="@android:color/white"
-        android:textSize="18sp"
+        android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -86,10 +87,10 @@
         android:layout_height="48dp"
         android:layout_marginTop="6dp"
         android:background="@android:color/white"
-        android:backgroundTint="#906D207B"
+        android:backgroundTint="#6D207B"
         app:layout_constraintTop_toBottomOf="@id/btnSelectFile" />
 
-    <!-- Horizontal Guideline to split screen 50/50 -->
+    <!-- Guideline to split screen 50/50 -->
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline"
         android:layout_width="wrap_content"
