@@ -152,27 +152,27 @@
         <!-- Translation Result -->
         <ScrollView
             android:id="@+id/scrollViewTranslation"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
+            android:layout_width="334dp"
+            android:layout_height="442dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="12dp"
             android:padding="12dp"
             app:layout_constraintBottom_toTopOf="@+id/goBackButton"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@id/verticalGuideline"
             app:layout_constraintTop_toBottomOf="@+id/tvTranslationLabel"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="12dp"
             tools:ignore="NestedScrolling">
 
             <TextView
                 android:id="@+id/tvTranslationResult"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
                 android:gravity="center"
-                android:text="@string/TranslateAppearHereText"
-                android:textSize="13sp"
                 android:padding="12dp"
+                android:text="@string/TranslateAppearHereText"
                 android:textColor="@android:color/white"
-                android:background="@android:color/transparent" />
+                android:textSize="13sp" />
 
         </ScrollView>
 
