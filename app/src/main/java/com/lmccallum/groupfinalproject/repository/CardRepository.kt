@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.flow
 class CardRepository {
     private val apiService = ScryfallApiService.create()
 
+    //Method to search scryfalls API for card by its name
     fun searchCardByName(cardName: String): Flow<ScryfallCard?> = flow {
         try {
             val card = apiService.getCardByName(cardName)
@@ -14,26 +15,5 @@ class CardRepository {
         } catch (e: Exception) {
             emit(null)
         }
-    }
-
-    fun searchCardFromScan(ocrText: String): Flow<ScryfallCard?> = flow {
-        val cardName = extractCardNameFromOCR(ocrText)
-        if (cardName.isNotEmpty())
-        {
-            try {
-                val card = apiService.getCardByName(cardName)
-                emit(card)
-            } catch (e: Exception) {
-                emit(null)
-            }
-        } else
-            emit(null)
-    }
-
-    private fun extractCardNameFromOCR(ocrText: String): String {
-        return ocrText.lines()
-            .firstOrNull { line ->
-                line.isNotBlank() && line.length > 2
-            }?.trim() ?: ""
     }
 }
