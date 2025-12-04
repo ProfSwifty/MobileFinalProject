@@ -156,8 +156,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="start"
-                android:textColor="#F8F8F8"
-                android:textStyle="bold" />
+                android:textColor="#F8F8F8"/>
 
             <Button
                 android:id="@+id/btnTranslate"
@@ -165,6 +164,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:backgroundTint="#806D207B"
+                android:textColor="#F8F8F8"
                 android:text="@string/translate_card_button"
                 android:visibility="gone" />
 
