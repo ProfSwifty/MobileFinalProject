@@ -26,7 +26,6 @@ class TranslationActivity : AppCompatActivity() {
     private var currentTranslation: String? = null
     private var currentCardName: String? = null
     private var currentCardType: String? = null
-    private var currentBitmapPath: String? = null // For saving bitmap path
 
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
