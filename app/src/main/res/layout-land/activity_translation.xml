@@ -85,6 +85,7 @@
             android:layout_height="wrap_content"
             android:text="@string/diffCardBtnText"
             android:backgroundTint="#806D207B"
+            android:textColor="@android:color/white"
             android:textSize="12sp"
             app:layout_constraintEnd_toStartOf="@id/verticalGuideline"
             app:layout_constraintStart_toStartOf="parent"

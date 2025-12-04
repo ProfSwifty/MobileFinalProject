@@ -161,6 +161,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:backgroundTint="#806D207B"
+                android:textColor="@android:color/white"
                 android:text="@string/translate_card_button"
                 android:visibility="gone" />
 
@@ -171,12 +172,13 @@
         android:id="@+id/btnGoBack"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginBottom="20dp"
         android:backgroundTint="#806D207B"
         android:text="@string/returnToMenu"
         android:textColor="@android:color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
