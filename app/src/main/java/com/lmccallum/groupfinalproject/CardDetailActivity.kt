@@ -27,10 +27,12 @@ class CardDetailActivity : AppCompatActivity() {
     private lateinit var binding: ActivityCardDetailBinding
     private lateinit var viewModel: CardDetailViewModel
 
+    //Makes the scanned card folder
     companion object {
         const val SCANNED_CARDS_DIR = "scanned_cards"
     }
 
+    //Method to initialize the card detail screen
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -41,13 +43,9 @@ class CardDetailActivity : AppCompatActivity() {
 
         setupUI()
         observeViewModel()
-
-        val scannedText = intent.getStringExtra("SCANNED_TEXT")
-        scannedText?.let {
-            viewModel.searchCardFromScan(it)
-        }
     }
 
+    //Method to setup the UI
     private fun setupUI() {
         binding.btnSearch.setOnClickListener {
             val searchText = binding.etSearch.text.toString().trim()
@@ -84,7 +82,7 @@ class CardDetailActivity : AppCompatActivity() {
         }
     }
 
-    //Save card IMAGE as PDF
+    //Method to Save card Image as PDF
     @SuppressLint("SetTextI18n")
     private fun saveCardAsPdf(card: com.lmccallum.groupfinalproject.model.ScryfallCard) {
         lifecycleScope.launch {
@@ -112,16 +110,14 @@ class CardDetailActivity : AppCompatActivity() {
         }
     }
 
-    //Download card image and create PDF
+    //Method to Download card image and create PDF
     @SuppressLint("SetTextI18n")
     private fun downloadAndCreatePdf(imageUrl: String, outputFile: File, cardName: String) {
         lifecycleScope.launch {
             try {
-                // Download the card image
                 val bitmap = downloadImage(imageUrl)
                 if (bitmap != null)
                 {
-                    //Create PDF with the card image
                     createImagePdf(bitmap, outputFile, cardName)
 
                     val intent = Intent(this@CardDetailActivity, TranslationActivity::class.java).apply {
@@ -142,7 +138,7 @@ class CardDetailActivity : AppCompatActivity() {
         }
     }
 
-    //Download image from URL
+    //Method to Download image from URL
     private suspend fun downloadImage(imageUrl: String): Bitmap? {
         return withContext(Dispatchers.IO) {
             try {
@@ -158,7 +154,7 @@ class CardDetailActivity : AppCompatActivity() {
         }
     }
 
-    //Create PDF with card image
+    //Method to Create PDF with the card image
     private fun createImagePdf(bitmap: Bitmap, outputFile: File, cardName: String) {
         val document = PdfDocument()
         val pageInfo = PdfDocument.PageInfo.Builder(bitmap.width, bitmap.height, 1).create()
@@ -175,7 +171,7 @@ class CardDetailActivity : AppCompatActivity() {
         document.close()
     }
 
-    //A fallback if no image is available
+    //Method to fallback on if no image is available
     private fun createCardInfoPdf(card: com.lmccallum.groupfinalproject.model.ScryfallCard, outputFile: File) {
         val document = PdfDocument()
 
@@ -205,6 +201,7 @@ class CardDetailActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
+    //Method to observe the viewmodel livedata streams for card data the loading state or errors
     private fun observeViewModel() {
         lifecycleScope.launch {
             viewModel.currentCard.collect { card ->
@@ -236,6 +233,7 @@ class CardDetailActivity : AppCompatActivity() {
         }
     }
 
+    //Method to display the card details
     @SuppressLint("SetTextI18n")
     private fun displayCard(card: com.lmccallum.groupfinalproject.model.ScryfallCard) {
         binding.btnTranslate.visibility = View.VISIBLE
@@ -291,7 +289,7 @@ class CardDetailActivity : AppCompatActivity() {
         binding.tvError.visibility = View.GONE
     }
 
-    //Function to convert mana cost symbols to readable text
+    //Method to convert mana cost symbols to readable text
     private fun convertManaCostToText(manaCost: String): String {
         val symbols = mutableListOf<String>()
 
@@ -355,7 +353,7 @@ class CardDetailActivity : AppCompatActivity() {
             "None"
     }
 
-    //Function to convert card text symbols to readable text
+    //Method to convert card text symbols to readable text
     private fun convertCardTextToReadable(cardText: String): String {
         return cardText.replace(Regex("\\{([^}]+)\\}")) { match ->
             when (val symbol = match.groupValues[1]) {
@@ -375,6 +373,7 @@ class CardDetailActivity : AppCompatActivity() {
         }
     }
 
+    //Method to hide all the card UI elements and clears the displayed date
     private fun hideCard()
     {
         binding.ivCardImage.visibility = View.GONE

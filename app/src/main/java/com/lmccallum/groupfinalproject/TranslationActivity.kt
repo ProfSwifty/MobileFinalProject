@@ -27,6 +27,7 @@ class TranslationActivity : AppCompatActivity() {
     private var currentCardName: String? = null
     private var currentCardType: String? = null
 
+    //Method to set up UI and handle PDF translation when button is clicked
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -92,6 +93,7 @@ class TranslationActivity : AppCompatActivity() {
         }
     }
 
+    //Method to save current state and UI selections
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
 
@@ -105,6 +107,7 @@ class TranslationActivity : AppCompatActivity() {
         outState.putInt("spinnerPosition", binding.LanguageSpinner.selectedItemPosition)
     }
 
+    //Method to restore saved state for, selected photo, translated text and the spinner option
     private fun restoreState(savedInstanceState: Bundle) {
         //Restore translation text
         currentTranslation = savedInstanceState.getString("currentTranslation")
@@ -126,9 +129,11 @@ class TranslationActivity : AppCompatActivity() {
 
         //Restore PDF file
         val pdfPath = savedInstanceState.getString("currentPdfPath")
-        if (pdfPath != null) {
+        if (pdfPath != null)
+        {
             val pdfFile = File(pdfPath)
-            if (pdfFile.exists()) {
+            if (pdfFile.exists())
+            {
                 currentPdfFile = pdfFile
                 displayCardFromPdf(pdfFile)
             }
@@ -139,6 +144,7 @@ class TranslationActivity : AppCompatActivity() {
         binding.LanguageSpinner.setSelection(spinnerPosition)
     }
 
+    //Method to Load and Display PDF frist page as an image
     @SuppressLint("SetTextI18n")
     private fun displayCardFromPdf(pdfFile: File) {
         try {
@@ -178,6 +184,7 @@ class TranslationActivity : AppCompatActivity() {
         currentCardType?.let { binding.tvCardType.text = it }
     }
 
+    //Method to translate the text using MLKit
     private fun translateText(text: String, sourceLanguage: String, targetLanguage: String) {
         val options = TranslatorOptions.Builder()
             .setSourceLanguage(sourceLanguage)
@@ -205,6 +212,7 @@ class TranslationActivity : AppCompatActivity() {
             }
     }
 
+    //Method to format the translated text (I over complicated this I cant lie)
     private fun formatTranslatedText(text: String): String {
         val lines = text.split("\n")
 
@@ -260,6 +268,7 @@ class TranslationActivity : AppCompatActivity() {
         return formattedText.replace(Regex("\n{3,}"), "\n\n").trim()
     }
 
+    //Method to setup the button listeners
     private fun setupClickListeners() {
         binding.btnSelectFile.setOnClickListener {
             showFileSelectionDialog()
@@ -271,6 +280,7 @@ class TranslationActivity : AppCompatActivity() {
         }
     }
 
+    //Method to inintalize the language spinner and provide the translations
     private fun setupLanguageSpinner() {
         val adapter = ArrayAdapter.createFromResource(
             this,
@@ -282,6 +292,7 @@ class TranslationActivity : AppCompatActivity() {
         binding.LanguageSpinner.adapter = adapter
     }
 
+    //Method to convery the use language to MLKit language code
     private fun getMLkitLanguage(selection:String):String {
         return when (selection) {
             "English" -> TranslateLanguage.ENGLISH
@@ -291,6 +302,7 @@ class TranslationActivity : AppCompatActivity() {
         }
     }
 
+    //Method to extract the first page of the PDF and make it a bitmap for ORC processing
     @SuppressLint("UseKtx")
     private fun extractFirstPageAsBitmap(pdfFile: File): Bitmap? {
         var parcelFileDescriptor: ParcelFileDescriptor? = null
@@ -320,6 +332,7 @@ class TranslationActivity : AppCompatActivity() {
         return null
     }
 
+    //Method to extract the text from the bitmap
     private fun extractTextFromBitMap(bitmap: Bitmap, callback: (String) -> Unit) {
         val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
         val image = InputImage.fromBitmap(bitmap, 0)
@@ -329,6 +342,7 @@ class TranslationActivity : AppCompatActivity() {
             .addOnFailureListener { showError("Failed to read text.") }
     }
 
+    //Method to dectect the source language using MLKit identification
     private fun detectSourceLanguage(text: String, callback: (String?) -> Unit) {
         val languageDetector = com.google.mlkit.nl.languageid.LanguageIdentification.getClient()
 
@@ -345,6 +359,7 @@ class TranslationActivity : AppCompatActivity() {
             }
     }
 
+    //Method to extract the card name from the pdf Filename
     private fun extractCardNameFromFilename(filename: String): String {
         return filename.removePrefix("search_")
             .removeSuffix(".pdf")
@@ -354,6 +369,7 @@ class TranslationActivity : AppCompatActivity() {
             .replace("_", " ")
     }
 
+    //Method to show dialog to select a PDF
     @SuppressLint("SetTextI18n")
     private fun showFileSelectionDialog() {
         val scannedDir = File(filesDir, ScannerActivity.SCANNED_CARDS_DIR)
@@ -385,6 +401,7 @@ class TranslationActivity : AppCompatActivity() {
             .show()
     }
 
+    //Method to give 2 options to the user when selecting a PDF
     @SuppressLint("SetTextI18n")
     private fun showFileOptionsDialog(file: File) {
         AlertDialog.Builder(this)
@@ -410,6 +427,7 @@ class TranslationActivity : AppCompatActivity() {
             .show()
     }
 
+    //Method to delete the selected PDF and refreshes the UI.
     @SuppressLint("SetTextI18n")
     private fun deleteFileAndRefresh(file: File) {
         if (file.delete())
@@ -438,6 +456,7 @@ class TranslationActivity : AppCompatActivity() {
 
     }
 
+    //Method to give error dialog
     private fun showError(message: String) {
         AlertDialog.Builder(this)
             .setTitle("Error")
@@ -446,6 +465,7 @@ class TranslationActivity : AppCompatActivity() {
             .show()
     }
 
+    //Method to do lifestyle cleanup
     override fun onDestroy() {
         super.onDestroy()
     }

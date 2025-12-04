@@ -41,22 +41,4 @@ class CardDetailViewModel : ViewModel() {
             }
         }
     }
-
-    //Same thing as the other function but for scanning
-    fun searchCardFromScan(ocrText: String)
-    {
-        _isLoading.value = true
-        _searchError.value = null
-        _currentCard.value = null
-
-        viewModelScope.launch {
-            repository.searchCardFromScan(ocrText).collect { card ->
-                _currentCard.value = card
-                _isLoading.value = false
-
-                if (card == null)
-                    _searchError.value = "Could not find card from scanned text"
-            }
-        }
-    }
 }
