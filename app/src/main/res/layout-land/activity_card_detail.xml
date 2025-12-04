@@ -48,6 +48,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:backgroundTint="#806D207B"
+        android:textColor="#F8F8F8"
         android:text="@string/search_card_button"
         app:layout_constraintEnd_toStartOf="@id/verticalGuideline"
         app:layout_constraintStart_toStartOf="parent"

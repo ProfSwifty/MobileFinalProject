@@ -38,6 +38,7 @@
         app:layout_constraintTop_toBottomOf="@+id/textView" />
 
     <!-- Card Image -->
+
     <ImageView
         android:id="@+id/cardScannedInImage"
         android:layout_width="0dp"
@@ -51,6 +52,7 @@
         app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/feedbackText"
+        app:layout_constraintVertical_bias="0.0"
         app:layout_constraintWidth_max="250dp"
         tools:srcCompat="@tools:sample/avatars" />
 
@@ -59,7 +61,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.73" />
+        app:layout_constraintGuide_percent="0.68" />
 
     <!-- Scanner Button -->
     <Button
