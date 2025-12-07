@@ -14,7 +14,7 @@ class MainViewModel : ViewModel() {
         TeamMember("Cameron Nold", "1146436", "Section 2")
     )
 
-    val appDescription = "Magic: The Gathering Card Scanner/Searcher/Translator - " +
-                         "Scan and translate MTG cards in foreign languages or search cards" +
-                         " in english"
+    val appDescription = "An all in one Magic: The Gathering Companion App." +
+                        " Scan and translate your MTG cards into any language." +
+                        " Search (in English) and lookup cards in detail."
 }
