@@ -57,7 +57,7 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    //Buttons to the other Activities other than Translation since thats handled in Card Details
+    //Buttons to the other Activities other than Translation since that's handled in Card Details
     private fun setupClickListeners() {
         binding.btnScanner.setOnClickListener {
             val intent = Intent(this, ScannerActivity::class.java)

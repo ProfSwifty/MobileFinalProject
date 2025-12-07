@@ -33,7 +33,7 @@ class ScannerActivity : AppCompatActivity() {
         private const val STATE_FEEDBACK = "feedback_text"
     }
 
-    //Method to intialize the document scanner and restore states
+    //Method to initialize the document scanner and restore states
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         scannerBinding = ActivityScannerBinding.inflate(layoutInflater)

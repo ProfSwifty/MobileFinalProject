@@ -144,7 +144,7 @@ class TranslationActivity : AppCompatActivity() {
         binding.LanguageSpinner.setSelection(spinnerPosition)
     }
 
-    //Method to Load and Display PDF frist page as an image
+    //Method to Load and Display PDF first page as an image
     @SuppressLint("SetTextI18n")
     private fun displayCardFromPdf(pdfFile: File) {
         try {
@@ -280,7 +280,7 @@ class TranslationActivity : AppCompatActivity() {
         }
     }
 
-    //Method to inintalize the language spinner and provide the translations
+    //Method to initialize the language spinner and provide the translations
     private fun setupLanguageSpinner() {
         val adapter = ArrayAdapter.createFromResource(
             this,
@@ -292,7 +292,7 @@ class TranslationActivity : AppCompatActivity() {
         binding.LanguageSpinner.adapter = adapter
     }
 
-    //Method to convery the use language to MLKit language code
+    //Method to convey the use language to MLKit language code
     private fun getMLkitLanguage(selection:String):String {
         return when (selection) {
             "English" -> TranslateLanguage.ENGLISH
@@ -342,7 +342,7 @@ class TranslationActivity : AppCompatActivity() {
             .addOnFailureListener { showError("Failed to read text.") }
     }
 
-    //Method to dectect the source language using MLKit identification
+    //Method to detect the source language using MLKit identification
     private fun detectSourceLanguage(text: String, callback: (String?) -> Unit) {
         val languageDetector = com.google.mlkit.nl.languageid.LanguageIdentification.getClient()
 
