@@ -59,7 +59,7 @@ dependencies {
     //However scanned images can be large this just makes resizing easier and helps with scanned images
     implementation("com.github.bumptech.glide:glide:5.0.5")
 
-    //implentation for translator
+    //implementation for translator
     implementation("com.google.mlkit:text-recognition:16.0.1")
     implementation("com.google.mlkit:translate:17.0.3")
     implementation("com.google.mlkit:language-id:17.0.6")
